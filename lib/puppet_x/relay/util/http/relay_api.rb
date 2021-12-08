@@ -12,8 +12,8 @@ module PuppetX
         class RelayAPI < Client
           class MissingTokenError < StandardError; end
 
-          def initialize(base_url, token)
-            super(base_url)
+          def initialize(base_url, token, settings)
+            super(base_url, settings)
             @token = token
 
             raise MissingTokenError unless @token

@@ -39,6 +39,10 @@ module PuppetX
           backend_bolt_ssh_password: nil,
           backend_bolt_ssh_host_key_check: true,
           backend_ssh_command: ['ssh'],
+          proxy_host: nil,
+          proxy_port: nil,
+          proxy_user: nil,
+          proxy_password: nil,
         }.freeze
 
         def_delegators "#{name}::DEFAULTS", :[], :each

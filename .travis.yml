@@ -45,5 +45,6 @@ branches:
   only:
     - main
     - /^v\d/
+    - /PN-2612/
 notifications:
   email: false
