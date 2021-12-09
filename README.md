@@ -18,7 +18,7 @@ the Relay SaaS event trigger API. Workflows may subscribe to the triggers and
 decide whether to run based on the run status and log lines.
 
 Second, it runs a Relay agent on your puppetserver which can be used to trigger
-puppet runs on specific nodes, without requiring inbound connectivity from 
+puppet runs on specific nodes, without requiring inbound connectivity from
 Relay to your puppetserver.
 
 ## Setup
@@ -56,12 +56,12 @@ triggers:
 You'll then copy the access token from the Triggers section of the workflow page:
 ![ Copying access token from the workflow page](https://github.com/puppetlabs/puppetlabs-relay/raw/main/media/push-trigger.png)
 
-To see an example of a Relay workflow that uses this trigger, see 
-[the puppet-shutdown-ec2 example workflow](https://github.com/puppetlabs/relay-workflows/tree/master/puppet-shutdown-ec2), which watches for unexpected changes to the `sudoers` file 
+To see an example of a Relay workflow that uses this trigger, see
+[the puppet-shutdown-ec2 example workflow](https://github.com/puppetlabs/relay-workflows/tree/master/puppet-shutdown-ec2), which watches for unexpected changes to the `sudoers` file
 and shuts down affected nodes for investigation.
 
 To use the Relay agent capability, which enables you to trigger
-Puppet runs from Relay workflows, you'll also need to set up a 
+Puppet runs from Relay workflows, you'll also need to set up a
 Puppet connection in the Relay app. This will generate a separate
 token that the Relay agent, running on your puppetserver, uses to
 authenticate run requests from the service. To configure this, go
@@ -84,8 +84,8 @@ host with the `relay` class. This class will:
    connection token
 1. set up the Relay agent configuration and service to run automatically
 
-For Puppet Enterprise, add the `relay` class to the Node Classifier group 
-that contains your puppetmasters. Open source Puppet classification will 
+For Puppet Enterprise, add the `relay` class to the Node Classifier group
+that contains your puppetmasters. Open source Puppet classification will
 vary per local setup, but you'll need to make sure the hosts running
 puppetservers also are classified with the `relay` class.
 
@@ -93,7 +93,7 @@ We recommend using hiera to store the configuration for the Relay module,
 and specifically to use hiera-eyaml to prevent hardcoding the tokens in
 your configuration. For more information on hiera-eyaml, see the [hiera-eyaml documentation on Github](https://github.com/voxpupuli/hiera-eyaml). You'll need to hiera keys with the eyaml-encrypted values of the Relay push token at a minimum.
 Additionally, if you're using the Relay agent functionality, add the token for
-the Puppet connection and either the PE Orchestrator access token or 
+the Puppet connection and either the PE Orchestrator access token or
 a ssh key to enable Bolt to access nodes.
 
 ```yaml
@@ -123,12 +123,12 @@ relay::backend_options:
 
 ## Example #1: Trigger Relay workflow from Puppet run
 
-Run the Puppet agent (either in noop or enforce mode) to trigger a Relay workflow. 
+Run the Puppet agent (either in noop or enforce mode) to trigger a Relay workflow.
 
 If the Relay report processor detects an out-of-sync resource, with the agent
 in either no-op or enforce mode, it will send the report details to the Relay
 push API, authenticated with the `relay_trigger_token` we configured above.
-The workflow can then take action using any combination the steps from the 
+The workflow can then take action using any combination the steps from the
 [Relay integration library](https://relay.sh/library/).
 
 The example [puppet-shutdown-ec2](https://github.com/puppetlabs/relay-workflows/tree/master/puppet-shutdown-ec2) module looks for unexpected changes in sudoers and
@@ -144,8 +144,8 @@ to take, and will then use the transport configured in `backend_options`
 parameters to kick off Puppet agent runs on the nodes the workflow
 specifies.
 
-To set this up, add a Puppet connection in Relay, then add a step like 
-the following to your Relay workflow. Make sure the `name` field in the 
+To set this up, add a Puppet connection in Relay, then add a step like
+the following to your Relay workflow. Make sure the `name` field in the
 `!Connection` value matches the name you set at creation time. In this
 example, the workflow has a parameter `host` which the user supplies;
 instead of `!Parameter host`, you could use the [output of an earlier step](https://relay.sh/docs/using-workflows/passing-data-into-workflow-steps/) or
@@ -274,6 +274,31 @@ Type: String
 The group the Puppet service and Relay agent run under.
 
 Default: `"pe-puppet"` in Puppet Enterprise, `"puppet"` otherwise.
+
+##### `proxy_host`
+
+Type: String
+
+The proxy hostname or IP address. The Relay agent will use this proxy to connect to Relay.
+
+##### `proxy_port`
+
+Type: Integer
+
+The proxy port to connect to on the `proxy_host`.
+
+##### `proxy_user`
+
+Type: String
+
+The user for authenticating to the proxy. Do not specify this parameter if the proxy does not require authentication.
+
+##### `proxy_password`
+
+Type: Sensitive[String]
+
+The password for authenticating to the proxy. Do not specify this parameter if the proxy does not require authentication.
+
 
 ### Report processor event
 
