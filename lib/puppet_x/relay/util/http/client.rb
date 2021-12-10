@@ -5,8 +5,18 @@ module PuppetX
     module Util
       module HTTP
         class Client
-          def initialize(base_url)
+          def initialize(base_url, settings = nil)
             @base_url = base_url
+
+            @proxy_host = settings[:proxy_host] if settings
+            @proxy_port = settings[:proxy_port] if settings
+            raise 'proxy_port should be set if proxy_host is defined' if @proxy_port.nil? && !@proxy_host.nil?
+
+            # restore default behaviour if @proxy_host is not set
+            @proxy_host = :ENV if @proxy_host.nil?
+
+            @proxy_user = settings[:proxy_user] if settings
+            @proxy_password = settings[:proxy_password] if settings
           end
 
           # @param verb [Symbol]
@@ -21,7 +31,7 @@ module PuppetX
 
             update_request!(req)
 
-            http = Net::HTTP.new(uri.host, uri.port)
+            http = Net::HTTP.new(uri.host, uri.port, @proxy_host, @proxy_port, @proxy_user, @proxy_password)
             http.use_ssl = uri.scheme == 'https'
             http.verify_mode = OpenSSL::SSL::VERIFY_PEER
             update_http!(http)

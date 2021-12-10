@@ -16,7 +16,7 @@ module PuppetX
 
         # @return [Util::HTTP::RelayAPI]
         def relay_api
-          Util::HTTP::RelayAPI.new(settings[:relay_api_url], settings[:relay_connection_token])
+          Util::HTTP::RelayAPI.new(settings[:relay_api_url], settings[:relay_connection_token], settings)
         end
 
         # @return [Backend::Base]

@@ -10,6 +10,10 @@ class relay (
   Optional[Stdlib::HTTPUrl] $relay_api_url = undef,
   Optional[Sensitive[String]] $relay_connection_token = undef,
   Optional[Variant[Array[Sensitive[String]], Sensitive[String]]] $relay_trigger_token = undef,
+  Optional[String] $proxy_host = undef,
+  Optional[Integer] $proxy_port = undef,
+  Optional[String] $proxy_user = undef,
+  Optional[Sensitive[String]] $proxy_password = undef,
 ) {
   $settings_file = "${settings::confdir}/relay.yaml"
   $state_file = "${settings::statedir}/relay.json"

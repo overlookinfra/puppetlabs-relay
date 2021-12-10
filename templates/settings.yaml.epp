@@ -6,6 +6,11 @@
   Optional[Variant[Array[Sensitive[String]], Sensitive[String]]] $relay_trigger_token,
   String $backend,
   Hash[String, Variant[Data, Sensitive[Data]]] $backend_options,
+  Optional[String] $proxy_host,
+  Optional[Integer] $proxy_port,
+  Optional[String] $proxy_user,
+  Optional[Sensitive[String]] $proxy_password,
+
 | -%>
 # This file is managed by Puppet. DO NOT EDIT.
 <%= to_yaml(({
@@ -29,4 +34,9 @@
       default => $value,
     },
   ]
+} + {
+  'proxy_host' => $proxy_host,
+  'proxy_port' => $proxy_port,
+  'proxy_user' => $proxy_user,
+  'proxy_password' => $proxy_password.then |$p| { $p.unwrap },
 })).filter |$key, $value| { $value =~ NotUndef }) -%>

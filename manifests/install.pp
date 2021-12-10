@@ -13,6 +13,10 @@ class relay::install {
       relay_trigger_token    => $relay::relay_trigger_token,
       backend                => $relay::backend,
       backend_options        => $relay::backend_options,
+      proxy_host             => $relay::proxy_host,
+      proxy_port             => $relay::proxy_port,
+      proxy_user             => $relay::proxy_user,
+      proxy_password         => $relay::proxy_password,
     })),
   }
 
