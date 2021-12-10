@@ -10,4 +10,4 @@ describe 'Relay HTTP Client' do
     client = PuppetX::Relay::Util::HTTP::Client.new('http://some.url', proxy_host: nil)
     expect(client.instance_variable_get(:@proxy_host)).to eq :ENV
   end
-endw
+end
