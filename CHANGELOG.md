@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 2.3.0
+
+Added: Proxy support for Relay Agent.
+
 ## Release 2.2.0
 
 Added: The Puppet Enterprise orchestrator backend now supports dispatching tasks and plans.
