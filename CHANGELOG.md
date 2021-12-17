@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 2.3.1
+
+Fixed: Relay API client changes in previous release made it incompatible with the Report Processor. This is now fixed.
+
 ## Release 2.3.0
 
 Added: Proxy support for Relay Agent.
