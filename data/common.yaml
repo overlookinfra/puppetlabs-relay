@@ -1,4 +1,8 @@
 ---
+lookup_options:
+  "^relay::.*token":
+    convert_to: "Sensitive"
+
 relay::backend: bolt
 relay::backend_options: {}
 relay::puppet_service: puppetserver
