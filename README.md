@@ -97,10 +97,6 @@ the Puppet connection and either the PE Orchestrator access token or
 a ssh key to enable Bolt to access nodes.
 
 ```yaml
-lookup_options:
-  "^relay::.*token":
-    convert_to: "Sensitive"
-
 # this token is from the "trigger" configuration
 relay::relay_trigger_token: >
     ENC[PKCS7,.....]
