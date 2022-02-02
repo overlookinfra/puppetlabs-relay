@@ -29,6 +29,9 @@ module PuppetX
           attr_reader :outcome
 
           # @return [String]
+          attr_reader :run_results
+
+          # @return [String]
           attr_reader :job_id
 
           # @return [Time]
@@ -45,13 +48,15 @@ module PuppetX
           end
 
           # @param outcome [String]
+          # @param run_results [String]
           # @return [self]
-          def to_complete(outcome: nil)
+          def to_complete(outcome: nil, run_results: nil)
             raise InvalidTransitionError, "Cannot transition status to complete from #{status}" unless [:pending, :in_progress].include? status
 
             upd = dup
             upd.instance_variable_set(:@status, :complete)
             upd.instance_variable_set(:@outcome, outcome)
+            upd.instance_variable_set(:@run_results, run_results)
             upd.instance_variable_set(:@next_update_before, nil)
             upd
           end
@@ -74,6 +79,7 @@ module PuppetX
             {
               'status' => status.to_s.tr('_', '-'),
               'outcome' => outcome,
+              'run_results' => run_results,
               'job_id' => job_id,
               'next_update_before' => (next_update_before.utc.iso8601 unless next_update_before.nil?),
               'updated_at' => (updated_at.utc.iso8601 unless updated_at.nil?),

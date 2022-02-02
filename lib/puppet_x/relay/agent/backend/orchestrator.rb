@@ -124,7 +124,11 @@ module PuppetX
             new_state =
               case data['state']
               when 'finished', 'failed'
-                run.state.to_complete(outcome: data['state'])
+                resp = @orchestrator_api.get("jobs/#{run.state.job_id}/nodes")
+                resp_json = JSON.parse(resp.body)
+                run_results = resp_json['items']
+                Puppet.debug("Run results: #{run_results}")
+                run.state.to_complete(outcome: data['state'], run_results: run_results)
               else
                 run.state.to_in_progress(schedule.next_update_before)
               end
