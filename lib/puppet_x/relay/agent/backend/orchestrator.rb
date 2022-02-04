@@ -116,17 +116,25 @@ module PuppetX
           # @param run [Model::Stateful]
           # @param schedule [Job::Schedule]
           def check_complete(run, schedule)
-            resp = @orchestrator_api.get("jobs/#{run.state.job_id}")
+            run_type = run.class.name.split('::').last
+            Puppet.debug("Checking completion of run: #{run} of type #{run_type}")
+            uri = "jobs/#{run.state.job_id}"
+            uri = "plan_jobs/#{run.state.job_id}" if run_type == 'PlanRun'
+            resp = @orchestrator_api.get(uri)
             resp.value
 
             data = JSON.parse(resp.body)
 
             new_state =
               case data['state']
-              when 'finished', 'failed'
-                resp = @orchestrator_api.get("jobs/#{run.state.job_id}/nodes")
-                resp_json = JSON.parse(resp.body)
-                run_results = resp_json['items']
+              when 'finished', 'failed', 'success'
+                if run_type == 'TaskRun'
+                  resp = @orchestrator_api.get("jobs/#{run.state.job_id}/nodes")
+                  resp_json = JSON.parse(resp.body)
+                  run_results = resp_json['items']
+                else
+                  run_results = data
+                end
                 Puppet.debug("Run results: #{run_results}")
                 run.state.to_complete(outcome: data['state'], run_results: run_results)
               else
