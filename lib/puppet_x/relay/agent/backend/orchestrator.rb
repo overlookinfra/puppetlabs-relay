@@ -31,7 +31,14 @@ module PuppetX
                 raise NotImplementedError
               end
             else
-              check_complete(run, schedule)
+              case run
+              when Model::Run, Model::TaskRun
+                check_job_complete(run, schedule)
+              when Model::PlanRun
+                check_plan_job_complete(run, schedule)
+              else
+                raise NotImplementedError
+              end
             end
           rescue Net::HTTPError, Net::HTTPRetriableError, Net::HTTPServerException, Net::HTTPFatalError => e
             Puppet.warning(_('Failed to send request to orchestrator API: %{message}, response: %{body}') % {
@@ -107,7 +114,7 @@ module PuppetX
 
             data = JSON.parse(resp.body)
 
-            Puppet.info(_('Orchestrator job %{job_id} started for plan run %{id}') % { job_id: data['name'], id: run.id })
+            Puppet.info(_('Orchestrator plan job %{job_id} started for plan run %{id}') % { job_id: data['name'], id: run.id })
 
             new_state = run.state.to_in_progress(schedule.next_update_before, job_id: data['name'])
             run.with_state(new_state)
@@ -115,27 +122,46 @@ module PuppetX
 
           # @param run [Model::Stateful]
           # @param schedule [Job::Schedule]
-          def check_complete(run, schedule)
-            run_type = run.class.name.split('::').last
-            Puppet.debug("Checking completion of run: #{run} of type #{run_type}")
-            uri = "jobs/#{run.state.job_id}"
-            uri = "plan_jobs/#{run.state.job_id}" if run_type == 'PlanRun'
-            resp = @orchestrator_api.get(uri)
+          def check_job_complete(run, schedule)
+            resp = @orchestrator_api.get("jobs/#{run.state.job_id}")
             resp.value
 
             data = JSON.parse(resp.body)
 
             new_state =
               case data['state']
-              when 'finished', 'failed', 'success'
-                if run_type == 'TaskRun'
-                  resp = @orchestrator_api.get("jobs/#{run.state.job_id}/nodes")
-                  resp_json = JSON.parse(resp.body)
-                  run_results = resp_json['items']
-                else
-                  run_results = data
-                end
-                Puppet.debug("Run results: #{run_results}")
+              when 'finished', 'failed'
+                nodes_resp = @orchestrator_api.get("jobs/#{run.state.job_id}/nodes")
+                nodes_resp.value
+
+                nodes_data = JSON.parse(nodes_resp.body)
+
+                run_results = data.slice('node_count', 'owner', 'options', 'timestamp', 'started_timestamp', 'finished_timestamp')
+                run_results['nodes'] = nodes_data['items']
+                Puppet.debug(_('Run %{id} complete with results %{results}') % { id: run.id, results: run_results })
+
+                run.state.to_complete(outcome: data['state'], run_results: run_results)
+              else
+                run.state.to_in_progress(schedule.next_update_before)
+              end
+
+            run.with_state(new_state)
+          end
+
+          # @param run [Model::Stateful]
+          # @param schedule [Job::Schedule]
+          def check_plan_job_complete(run, schedule)
+            resp = @orchestrator_api.get("plan_jobs/#{run.state.job_id}")
+            resp.value
+
+            data = JSON.parse(resp.body)
+
+            new_state =
+              case data['state']
+              when 'success', 'failure'
+                run_results = data.slice('owner', 'options', 'timestamp', 'created_timestamp', 'finished_timestamp', 'result')
+                Puppet.debug(_('Run %{id} complete with results %{results}') % { id: run.id, results: run_results })
+
                 run.state.to_complete(outcome: data['state'], run_results: run_results)
               else
                 run.state.to_in_progress(schedule.next_update_before)
