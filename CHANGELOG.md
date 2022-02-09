@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 2.4.0
+
+Added: The agent now provides the results of the task, plan and puppet runs back to the API.
+Added: Minor documentation changes.
+
+Fixed: Resolved an issue where the Relay agent incorrectly looked up plan jobs in the Orchestrator.
+
 ## Release 2.3.2
 
 Fixed: Relay API client changes in previous release made it incompatible with the Report Processor. This is now fixed.

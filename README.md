@@ -26,7 +26,8 @@ Relay to your puppetserver.
 ### Requirements
 
 You must already have a puppetserver to which puppet agents submit reports and
-that can connect to the internet. Because you'll need to store access tokens
+that can connect to the internet (optionally through a proxy).
+Because you'll need to store access tokens
 for Relay, we strongly recommend using eyaml to encrypt the tokens as hiera keys.
 
 You must also have a Relay account registered. You can sign up for free at
@@ -85,13 +86,15 @@ host with the `relay` class. This class will:
 1. set up the Relay agent configuration and service to run automatically
 
 For Puppet Enterprise, add the `relay` class to the Node Classifier group
-that contains your puppetmasters. Open source Puppet classification will
+that contains your primary server. Open source Puppet classification will
 vary per local setup, but you'll need to make sure the hosts running
 puppetservers also are classified with the `relay` class.
 
 We recommend using hiera to store the configuration for the Relay module,
 and specifically to use hiera-eyaml to prevent hardcoding the tokens in
-your configuration. For more information on hiera-eyaml, see the [hiera-eyaml documentation on Github](https://github.com/voxpupuli/hiera-eyaml). You'll need to hiera keys with the eyaml-encrypted values of the Relay push token at a minimum.
+your configuration. For more information on hiera-eyaml,
+see the [hiera-eyaml documentation on Github](https://github.com/voxpupuli/hiera-eyaml).
+You'll need to hiera keys with the eyaml-encrypted values of the Relay push token at a minimum.
 Additionally, if you're using the Relay agent functionality, add the token for
 the Puppet connection and either the PE Orchestrator access token or
 a ssh key to enable Bolt to access nodes.
@@ -115,7 +118,6 @@ relay::backend_options:
   password: >
     ENC[PKCS7,.....]
 ```
-
 
 ## Example #1: Trigger Relay workflow from Puppet run
 
@@ -236,6 +238,8 @@ For backend `"orchestrator"`:
   slash in the URL. Default: `"https://{puppetserver}:8143/orchestrator/v1/"`
 * `token`: The RBAC token to use to access the orchestrator API. Sensitive.
   **Required.**
+  See [PE RBAC documentation](https://puppet.com/docs/pe/2021.2/rbac_token_auth_intro.html)
+  for more information on PE RBAC tokens.
 
 For backend `"bolt"`:
 
