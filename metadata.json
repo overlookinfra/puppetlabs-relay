@@ -1,6 +1,6 @@
 {
   "name": "puppetlabs-relay",
-  "version": "2.3.2",
+  "version": "2.4.0",
   "author": "Hunter Haugen",
   "summary": "Configure Puppet to work with Relay",
   "license": "Apache-2.0",
