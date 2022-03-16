@@ -47,8 +47,8 @@ module PuppetX
             })
             run_results = { 
               error: "Failed to send request to orchestrator API",
-              message: {e.message},
-              response: {e.response.body}
+              message: e.message,
+              response: JSON.parse(e.response.body)
             }
             new_state = run.state.to_complete(outcome: 'failure', run_results: run_results)
             run.with_state(new_state)
