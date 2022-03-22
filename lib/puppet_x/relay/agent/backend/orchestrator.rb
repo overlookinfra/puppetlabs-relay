@@ -45,7 +45,11 @@ module PuppetX
               message: e.message,
               body: e.response.body,
             })
-            result = JSON.parse(e.response.body) rescue e.response.body
+            begin
+              result = JSON.parse(e.response.body)
+            rescue JSON::ParserError
+              result = e.response.body
+            end
             new_state = run.state.to_complete(outcome: 'error', run_results: { result: result })
             run.with_state(new_state)
           rescue Net::HTTPError, Net::HTTPRetriableError, Net::HTTPServerException, Net::HTTPFatalError => e
