@@ -40,7 +40,19 @@ module PuppetX
                 raise NotImplementedError
               end
             end
-          rescue Net::HTTPError, Net::HTTPRetriableError, Net::HTTPServerException, Net::HTTPFatalError => e
+          rescue Net::HTTPClientError, Net::HTTPServerException => e
+            Puppet.warning(_('Failed to send request to orchestrator API: %{message}, response: %{body}') % {
+              message: e.message,
+              body: e.response.body,
+            })
+            begin
+              result = JSON.parse(e.response.body)
+            rescue JSON::ParserError
+              result = { msg: e.response.body }
+            end
+            new_state = run.state.to_complete(outcome: 'error', run_results: { result: result })
+            run.with_state(new_state)
+          rescue Net::HTTPError, Net::HTTPRetriableError, Net::HTTPFatalError => e
             Puppet.warning(_('Failed to send request to orchestrator API: %{message}, response: %{body}') % {
               message: e.message,
               body: e.response.body,

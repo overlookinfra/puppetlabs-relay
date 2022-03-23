@@ -3,7 +3,7 @@ fixtures:
   symlinks:
     relay: "#{source_dir}"
   repositories:
-    provision: 'git://github.com/puppetlabs/provision.git'
+    provision: 'https://github.com/puppetlabs/provision.git'
   forge_modules:
     facts:
       repo: "puppetlabs-facts"

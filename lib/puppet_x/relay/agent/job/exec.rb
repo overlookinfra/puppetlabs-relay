@@ -65,18 +65,20 @@ module PuppetX
               begin
                 @run = @backend.exec(@run, @state_dir, sched)
               rescue NotImplementedError => e
-                Puppet.log_exception(e, _('The backend %{backend_name} does not support the configuration for run %{id}: %{message}') % {
+                message = _('The backend %{backend_name} does not support the configuration for run %{id}: %{message}') % {
                   backend_name: @backend.class.name,
                   id: @run.id,
                   message: e.message,
-                })
-                @run = @run.with_state(@run.state.to_complete(outcome: 'error'))
+                }
+                Puppet.log_exception(e, message)
+                @run = @run.with_state(@run.state.to_complete(outcome: 'error', run_results: { result: { msg: message } }))
               rescue StandardError => e
-                Puppet.log_exception(e, _('Run %{id} encountered an error during execution: %{message} (%{retries} retries remaining)') % { id: @run.id, message: e.message, retries: @retries })
+                message = _('Run %{id} encountered an error during execution: %{message} (%{retries} retries remaining)') % { id: @run.id, message: e.message, retries: @retries }
+                Puppet.log_exception(e, message)
 
                 if (@retries -= 1) < 0
                   Puppet.warning(_('Retries exhausted for run %{id}, transitioning to complete with error outcome') % { id: @run.id })
-                  @run = @run.with_state(@run.state.to_complete(outcome: 'error'))
+                  @run = @run.with_state(@run.state.to_complete(outcome: 'error', run_results: { result: { msg: message } }))
                 end
               ensure
                 @run = @backend.relay_api.put_run_state(@run)
