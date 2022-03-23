@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 2.5.0
+
+Added: If an orchestrator error occurs during a job run, the agent now returns the error message as `run_results` with status `error`.
+
 ## Release 2.4.0
 
 Added: The agent now provides the results of the task, plan and puppet runs back to the API.
