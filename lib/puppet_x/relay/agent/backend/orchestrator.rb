@@ -48,7 +48,7 @@ module PuppetX
             begin
               result = JSON.parse(e.response.body)
             rescue JSON::ParserError
-              result = e.response.body
+              result = { msg: e.response.body }
             end
             new_state = run.state.to_complete(outcome: 'error', run_results: { result: result })
             run.with_state(new_state)
