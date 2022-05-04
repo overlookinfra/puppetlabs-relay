@@ -3,7 +3,7 @@
   Optional[Boolean] $test,
   Optional[Stdlib::HTTPUrl] $relay_api_url,
   Optional[Sensitive[String]] $relay_connection_token,
-  Optional[Variant[Array[Sensitive[String]], Sensitive[String]]] $relay_trigger_token,
+  Optional[Variant[Sensitive[Array[String]], Sensitive[String]]] $relay_trigger_token,
   String $backend,
   Hash[String, Variant[Data, Sensitive[Data]]] $backend_options,
   Optional[String] $proxy_host,
@@ -18,13 +18,7 @@
   'test' => $test,
   'relay_api_url' => $relay_api_url,
   'relay_connection_token' => $relay_connection_token.then |$t| { $t.unwrap },
-  'relay_trigger_token' => $relay_trigger_token.then |$ts| {
-    if $ts =~ Array[Sensitive[String]] {
-      $ts.map |$t| { $t.unwrap }
-    } else {
-      $ts.unwrap
-    }
-  },
+  'relay_trigger_token' => $relay_trigger_token.then |$ts| { $ts.unwrap },
   'backend' => $backend,
 } + Hash($backend_options.map |$key, $value| {
   [

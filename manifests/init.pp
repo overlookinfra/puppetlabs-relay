@@ -9,7 +9,7 @@ class relay (
   Optional[Boolean] $test = undef,
   Optional[Stdlib::HTTPUrl] $relay_api_url = undef,
   Optional[Sensitive[String]] $relay_connection_token = undef,
-  Optional[Variant[Array[Sensitive[String]], Sensitive[String]]] $relay_trigger_token = undef,
+  Optional[Variant[Sensitive[Array[String]], Sensitive[String]]] $relay_trigger_token = undef,
   Optional[String] $proxy_host = undef,
   Optional[Integer] $proxy_port = undef,
   Optional[String] $proxy_user = undef,
