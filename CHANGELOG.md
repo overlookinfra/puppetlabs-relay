@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 2.5.1
+
+Fixed: The connection token now correctly supports decoding arrays from EYAML.
+
 ## Release 2.5.0
 
 Added: If an orchestrator error occurs during a job run, the agent now returns the error message as `run_results` with status `error`.
